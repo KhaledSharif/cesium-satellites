@@ -1,18 +1,19 @@
 {
-  "name": "cesium-webpack-example",
+  "name": "cesium-satellites",
   "version": "1.0.0",
-  "description": "The minimal recomended setup for an app using Cesium with Webpack.",
+  "description": "View the orbit of satellites in a Cesium viewer, derived from a two line element list",
   "main": "index.js",
   "keywords": [
     "cesium",
     "webpack",
-    "example"
+    "nginx",
+    "satellites",
+    "two-line-elements"
   ],
   "author": {
-    "name": "Analytical Graphics, Inc.",
-    "url": "https://www.agi.com"
+    "name": "Khaled Sharif",
+    "url": "http://www.kldsrf.com/"
   },
-  "homepage": "https://cesiumjs.org",
   "license": "Apache-2.0",
   "devDependencies": {
     "cesium": "^1.39.0",
@@ -27,12 +28,10 @@
     "webpack-dev-server": "^2.9.1"
   },
   "scripts": {
-    "build": "node_modules/.bin/webpack --config webpack.config.js",
-    "start": "node_modules/.bin/webpack-dev-server --config webpack.config.js",
-    "release": "node_modules/.bin/webpack --config webpack.release.config.js",
-    "serve-release": "node_modules/.bin/webpack-dev-server --config webpack.release.config.js --content-base /dist"
+    "build": "node_modules/.bin/webpack --config webpack.config.js"
   },
   "dependencies": {
-    "moment": "^2.20.1"
+    "moment": "^2.20.1",
+    "tle.js": "^1.0.21"
   }
 }

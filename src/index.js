@@ -1,9 +1,9 @@
-var MomentLibrary = require('moment');
-require('cesium/Source/Widgets/widgets.css');
-require('./main.css');
-var CesiumLibrary = require('cesium/Source/Cesium');
-const TLEJS = require('tle.js');
-const tle = new TLEJS();
+const MomentLibrary = require('moment');
+const CesiumWidgetsCss = require('cesium/Source/Widgets/widgets.css');
+const MiscStyling = require('./main.css');
+const CesiumLibrary = require('cesium/Source/Cesium');
+const TleJsLibrary = require('tle.js');
+const tle = new TleJsLibrary();
 
 function htmlToElement(html) {
     var template = document.createElement('template');
@@ -77,7 +77,7 @@ Window.drawOrbit = function()
         Window.twoLineElements[Window.tleIndex + 1],
         Window.twoLineElements[Window.tleIndex + 2],
     ].join("\n");
-    var issOrbit = [];
+    var satelliteOrbit = [];
     var timesArray = [];
 
     if (Window.orbitPoints) {
@@ -92,9 +92,9 @@ Window.drawOrbit = function()
         var newTime = MomentLibrary().add(i * 10, 'minutes');
         timesArray.push(newTime);
         var coordinates = tle.getLatLon(tleStr, newTime.valueOf());
-        issOrbit.push(coordinates.lng);
-        issOrbit.push(coordinates.lat);
-        issOrbit.push(404.8 * 1000);
+        satelliteOrbit.push(coordinates.lng);
+        satelliteOrbit.push(coordinates.lat);
+        satelliteOrbit.push(404.8 * 1000);
     }
     for (var i of [...Array(100).keys()])
     {
@@ -123,7 +123,7 @@ Window.drawOrbit = function()
     Window.orbitPolyline = CesiumViewer.entities.add({
         name: 'Orbit Polyline',
         polyline: {
-            positions: CesiumLibrary.Cartesian3.fromDegreesArrayHeights(issOrbit),
+            positions: CesiumLibrary.Cartesian3.fromDegreesArrayHeights(satelliteOrbit),
             width: 5,
             followSurface: true,
             material: new CesiumLibrary.PolylineArrowMaterialProperty(CesiumLibrary.Color.RED)

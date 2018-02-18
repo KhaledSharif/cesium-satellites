@@ -28,9 +28,9 @@ module.exports = [{
         }]
     },
     plugins: [
-        new CopyWebpackPlugin([{from: path.join(cesiumSource, cesiumWorkers), to: 'Workers'}]),
-        new CopyWebpackPlugin([{from: path.join(cesiumSource, 'Assets'), to: 'Assets'}]),
-        new CopyWebpackPlugin([{from: path.join(cesiumSource, 'Widgets'), to: 'Widgets'}]),
+        new CopyWebpackPlugin([{from: path.join(cesiumSource, cesiumWorkers), to: 'dist/Workers'}]),
+        new CopyWebpackPlugin([{from: path.join(cesiumSource, 'Assets'), to: 'dist/Assets'}]),
+        new CopyWebpackPlugin([{from: path.join(cesiumSource, 'Widgets'), to: 'dist/Widgets'}]),
         new webpack.DefinePlugin({
             CESIUM_BASE_URL: JSON.stringify('')
         })
