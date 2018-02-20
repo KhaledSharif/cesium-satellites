@@ -4,12 +4,11 @@ const TleJsLibrary  = require('tle.js');
 const MomentLibrary = require('moment');
 const CesiumLibrary = require('cesium/Source/Cesium');
 
-class OrbitPolylineDrawer {
+class OrbitCommonClass {
     constructor(cesiumMapObject) {
         this._cesiumMapObject = cesiumMapObject;
         this._tle = new TleJsLibrary();
         this._twoLineElement = null;
-        this._orbitPolyline = null;
     }
 
     get twoLineElement() {
@@ -19,6 +18,13 @@ class OrbitPolylineDrawer {
     set twoLineElement(twoLineElementString) {
         this._twoLineElement = twoLineElementString;
         this._draw();
+    }
+}
+
+class OrbitPolylineDrawer extends OrbitCommonClass {
+    constructor(cesiumMapObject) {
+        super(cesiumMapObject);
+        this._orbitPolyline = null;
     }
 
     _draw() {
@@ -29,9 +35,7 @@ class OrbitPolylineDrawer {
         {
             newTime = MomentLibrary().add(i * 10, 'minutes');
             coordinates = this._tle.getLatLon(this.twoLineElement, newTime.valueOf());
-            satelliteOrbit.push(coordinates.lng);
-            satelliteOrbit.push(coordinates.lat);
-            satelliteOrbit.push(404.8 * 1000);
+            satelliteOrbit = satelliteOrbit.concat([coordinates.lng, coordinates.lat, 404.8 * 1000]);
         }
         if (this._orbitPolyline) this._cesiumMapObject.entities.remove(this._orbitPolyline);
         this._orbitPolyline = this._cesiumMapObject.entities.add({
@@ -40,27 +44,16 @@ class OrbitPolylineDrawer {
                 positions: CesiumLibrary.Cartesian3.fromDegreesArrayHeights(satelliteOrbit),
                 width: 5,
                 followSurface: true,
-                material: new CesiumLibrary.PolylineArrowMaterialProperty(CesiumLibrary.Color.RED)
+                material: new CesiumLibrary.PolylineArrowMaterialProperty(CesiumLibrary.Color.RED),
             }
         });
     }
 }
 
-class OrbitPointsDrawer {
+class OrbitPointsDrawer extends OrbitCommonClass {
     constructor(cesiumMapObject) {
-        this._cesiumMapObject = cesiumMapObject;
-        this._tle = new TleJsLibrary();
-        this._twoLineElement = null;
+        super(cesiumMapObject);
         this._orbitPoints = [];
-    }
-
-    get twoLineElement() {
-        return this._twoLineElement;
-    }
-
-    set twoLineElement(twoLineElementString) {
-        this._twoLineElement = twoLineElementString;
-        this._draw();
     }
 
     _draw() {
@@ -89,7 +82,7 @@ class OrbitPointsDrawer {
                     style: CesiumLibrary.LabelStyle.FILL_AND_OUTLINE,
                     outlineWidth : 2,
                     verticalOrigin : CesiumLibrary.VerticalOrigin.TOP,
-                    pixelOffset : new CesiumLibrary.Cartesian2(0, 32)
+                    pixelOffset : new CesiumLibrary.Cartesian2(0, 32),
                 }
             }));
         }

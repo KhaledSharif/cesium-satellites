@@ -1,87 +1,73 @@
-const MomentLibrary = require('moment');
-const CesiumWidgetsCss = require('cesium/Source/Widgets/widgets.css');
-const MiscStyling = require('./main.css');
-const CesiumLibrary = require('cesium/Source/Cesium');
-const AdditionalClasses = require('./classes.js');
+// import crel
+const crel                = require('crel');
 
-function htmlToElement(html) {
-    var template = document.createElement('template');
-    html = html.trim();
-    template.innerHTML = html;
-    return template.content.firstChild;
-}
+// import relevant css
+const CesiumWidgetsCss    = require('cesium/Source/Widgets/widgets.css');
+const MiscStyling         = require('./main.css');
 
-var CesiumViewer = new CesiumLibrary.Viewer('cesiumContainer',
-{
-    shadows: true,
-    animation: false,
-    baseLayerPicker: false,
-    fullscreenButton: false,
-    geocoder: false,
-    homeButton: false,
-    infoBox: false,
-    sceneModePicker: false,
-    selectionIndicator: false,
-    timeline: false,
-    navigationHelpButton: false,
-    navigationInstructionsInitiallyVisible: false,
-    sceneMode : CesiumLibrary.SceneMode.SCENE3D,
-    terrainProvider : new CesiumLibrary.CesiumTerrainProvider({
-        url : 'https://assets.agi.com/stk-terrain/v1/tilesets/world/tiles'
-    }),
-    imageryProvider : new CesiumLibrary.WebMapTileServiceImageryProvider({
-        url : 
-            'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/'+
-            MomentLibrary().subtract(1, 'days').format("YYYY-MM-DD") +
-            '/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpg',
-        layer : 'VIIRS_SNPP_CorrectedReflectance_TrueColor',
-        style : 'default',
-        tileMatrixSetID : 'GoogleMapsCompatible_Level9',
-        maximumLevel : 5,
-        format : 'image/jpeg',
-        credit : new CesiumLibrary.Credit({text : 'NASA Global Imagery Browse Services for EOSDIS'})
-    }),
-    mapProjection : new CesiumLibrary.WebMercatorProjection()
-});
+// import custom classes
+const CesiumClasses       = require('./cesium-classes.js');
+const AdditionalClasses   = require('./classes.js');
 
-var orbitPointsDrawer   = new AdditionalClasses.OrbitPointsDrawer(CesiumViewer);
-var orbitPolylineDrawer = new AdditionalClasses.OrbitPolylineDrawer(CesiumViewer);
+// define global constants
+const cesiumWithCR        = new CesiumClasses.CesiumWithCorrectedReflectance('cesiumContainer');
+const cesiumViewer        = cesiumWithCR.cesiumViewer;
+const orbitPointsDrawer   = new AdditionalClasses.OrbitPointsDrawer(cesiumViewer);
+const orbitPolylineDrawer = new AdditionalClasses.OrbitPolylineDrawer(cesiumViewer);
 
-var twoLineElements = null;
+// define a global variable to store TLEs
+var   twoLineElements     = null;
 
+// main entry point of the application
+fetch('stations.txt')
+    .then(response => response.text())
+    .then(function(text)
+    {
+        // this will split the TLE text file line by line
+        twoLineElements = text.match(/[^\r\n]+/g);
+    })
+    .then(() => createListOfSatellites());
+
+/**
+ * Draws orbit points and polyline given a TLE string
+ * @param {string} _twoLineElement
+ */
 function drawOrbit(_twoLineElement)
 {
     orbitPointsDrawer.twoLineElement = _twoLineElement;
     orbitPolylineDrawer.twoLineElement = _twoLineElement;
 }
 
-fetch('stations.txt')
-    .then(response => response.text())
-    .then(function(text)
+/**
+ * Adds an onClick event to a satellite button
+ * @param {Element} _satelliteElement
+ */
+function addOnClickSatelliteEvent(_satelliteElement)
+{
+    _satelliteElement.onclick = function() {
+        var tleIndex = parseInt(this.getAttribute("value"));
+        drawOrbit(twoLineElements.slice(tleIndex, tleIndex + 3).join("\n"));
+    };
+}
+
+/**
+ * Creates the list of satellites from the global TLE file
+ */
+function createListOfSatellites()
+{
+    const listSelector = document.getElementById("list-of-satellites");
+    for (var iterator = 0; iterator < twoLineElements.length; iterator += 3)
     {
-        twoLineElements = text.match(/[^\r\n]+/g);
-    })
-    .then(function()
-    {
-        const listSelector = document.getElementById("list-of-satellites");
-        var iterator = 0;
-        while (iterator < twoLineElements.length)
-        {
-            listSelector.appendChild(htmlToElement(
-                '<a class="list-group-item" value="' + iterator.toString() + '">' + twoLineElements[iterator] + '</a>'
-            ));
-            iterator += 3;
-        }
-        Array.from(listSelector.children).forEach(function (element) {
-            element.onclick = function() {
-                var tleIndex = parseInt(this.getAttribute("value"));
-                drawOrbit([
-                    twoLineElements[tleIndex],
-                    twoLineElements[tleIndex+1],
-                    twoLineElements[tleIndex+2],
-                ].join("\n"));
-            };
-        });
-    });
+        // crel here will create an `a` element that represents a satellite button
+        listSelector.appendChild(
+            crel(
+                'a',
+                {'class': 'list-group-item', 'value': iterator.toString()},
+                twoLineElements[iterator], // this is the name of the satellite
+            )
+        );
+    }
+    Array.from(listSelector.children).forEach((element) => addOnClickSatelliteEvent(element));
+}
 
 
