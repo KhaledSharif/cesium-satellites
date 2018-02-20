@@ -15,3 +15,5 @@ docker run -d -p 8080:80 cesium:satellites
 ```
 
 In your browser, navigate to `http://localhost:8080/`.
+
+For the brave of heart, there also exists an Alpine version of the container. See [`Dockerfile.alpine`](https://github.com/KhaledSharif/cesium-satellites/blob/master/Dockerfile.alpine) for more information.
