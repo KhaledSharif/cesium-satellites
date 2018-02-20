@@ -2,8 +2,7 @@ const MomentLibrary = require('moment');
 const CesiumWidgetsCss = require('cesium/Source/Widgets/widgets.css');
 const MiscStyling = require('./main.css');
 const CesiumLibrary = require('cesium/Source/Cesium');
-const TleJsLibrary = require('tle.js');
-const tle = new TleJsLibrary();
+const AdditionalClasses = require('./classes.js');
 
 function htmlToElement(html) {
     var template = document.createElement('template');
@@ -45,88 +44,44 @@ var CesiumViewer = new CesiumLibrary.Viewer('cesiumContainer',
     mapProjection : new CesiumLibrary.WebMercatorProjection()
 });
 
+var orbitPointsDrawer   = new AdditionalClasses.OrbitPointsDrawer(CesiumViewer);
+var orbitPolylineDrawer = new AdditionalClasses.OrbitPolylineDrawer(CesiumViewer);
+
+var twoLineElements = null;
+
+function drawOrbit(_twoLineElement)
+{
+    orbitPointsDrawer.twoLineElement = _twoLineElement;
+    orbitPolylineDrawer.twoLineElement = _twoLineElement;
+}
+
 fetch('stations.txt')
-.then(response => response.text())
-.then(function(text)
-{
-    Window.twoLineElements = text.match(/[^\r\n]+/g);
-})
-.then(function()
-{
-    const listSelector = document.getElementById("list-of-satellites");
-    var iterator = 0;
-    while (iterator < Window.twoLineElements.length)
+    .then(response => response.text())
+    .then(function(text)
     {
-        listSelector.appendChild(htmlToElement(
-            '<a class="list-group-item" value="' + iterator.toString() + '">' + Window.twoLineElements[iterator] + '</a>'
-        ));
-        iterator += 3;
-    }
-    Array.from(listSelector.children).forEach(function (element) {
-        element.onclick = function () {
-            Window.tleIndex = parseInt(this.getAttribute("value"));
-            Window.drawOrbit();
-        };
-    }); 
-});
-
-Window.drawOrbit = function()
-{
-    var tleStr = [
-        Window.twoLineElements[Window.tleIndex],
-        Window.twoLineElements[Window.tleIndex + 1],
-        Window.twoLineElements[Window.tleIndex + 2],
-    ].join("\n");
-    var satelliteOrbit = [];
-    var timesArray = [];
-
-    if (Window.orbitPoints) {
-        for (var op of Window.orbitPoints)
+        twoLineElements = text.match(/[^\r\n]+/g);
+    })
+    .then(function()
+    {
+        const listSelector = document.getElementById("list-of-satellites");
+        var iterator = 0;
+        while (iterator < twoLineElements.length)
         {
-            CesiumViewer.entities.remove(op);
+            listSelector.appendChild(htmlToElement(
+                '<a class="list-group-item" value="' + iterator.toString() + '">' + twoLineElements[iterator] + '</a>'
+            ));
+            iterator += 3;
         }
-    }
-    Window.orbitPoints = [];
-    for (var i of [...Array(100).keys()])
-    {
-        var newTime = MomentLibrary().add(i * 10, 'minutes');
-        timesArray.push(newTime);
-        var coordinates = tle.getLatLon(tleStr, newTime.valueOf());
-        satelliteOrbit.push(coordinates.lng);
-        satelliteOrbit.push(coordinates.lat);
-        satelliteOrbit.push(404.8 * 1000);
-    }
-    for (var i of [...Array(100).keys()])
-    {
-        var newTime = MomentLibrary().add(i, 'hours');
-        if (newTime >= timesArray[timesArray.length - 1]) break;
-        var coordinates = tle.getLatLon(tleStr, newTime.valueOf());
-        Window.orbitPoints.push(CesiumViewer.entities.add({
-            position : CesiumLibrary.Cartesian3.fromDegrees(coordinates.lng, coordinates.lat, 404.8 * 1000),
-            point : {
-                pixelSize : 5,
-                color : CesiumLibrary.Color.RED,
-                outlineColor : CesiumLibrary.Color.WHITE,
-                outlineWidth : 2
-            },
-            label : {
-                text : newTime.fromNow(),
-                font : '14pt monospace',
-                style: CesiumLibrary.LabelStyle.FILL_AND_OUTLINE,
-                outlineWidth : 2,
-                verticalOrigin : CesiumLibrary.VerticalOrigin.TOP,
-                pixelOffset : new CesiumLibrary.Cartesian2(0, 32)
-            }
-        }));
-    }
-    if (Window.orbitPolyline) CesiumViewer.entities.remove(Window.orbitPolyline);
-    Window.orbitPolyline = CesiumViewer.entities.add({
-        name: 'Orbit Polyline',
-        polyline: {
-            positions: CesiumLibrary.Cartesian3.fromDegreesArrayHeights(satelliteOrbit),
-            width: 5,
-            followSurface: true,
-            material: new CesiumLibrary.PolylineArrowMaterialProperty(CesiumLibrary.Color.RED)
-        }
+        Array.from(listSelector.children).forEach(function (element) {
+            element.onclick = function() {
+                var tleIndex = parseInt(this.getAttribute("value"));
+                drawOrbit([
+                    twoLineElements[tleIndex],
+                    twoLineElements[tleIndex+1],
+                    twoLineElements[tleIndex+2],
+                ].join("\n"));
+            };
+        });
     });
-};
+
+

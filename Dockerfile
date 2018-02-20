@@ -10,7 +10,6 @@ ADD src /frontend/src/
 COPY package.json /frontend 
 COPY webpack.config.js /frontend
 RUN cd /frontend && npm install && npm run build
-COPY src/index.html /frontend/dist/index.html
 RUN cp -r /frontend/dist/* /usr/share/nginx/html
 RUN apt install -y wget
 ENTRYPOINT \
