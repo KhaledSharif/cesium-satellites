@@ -1,37 +1,37 @@
 <head>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<link rel="stylesheet" href="https://cdn.rawgit.com/FezVrasta/bootstrap-material-design/dist/dist/bootstrap-material-design.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/4.0.2/bootstrap-material-design.css">
 </head>
 
 <body>
 	<div class="bmd-layout-container bmd-drawer-f-l">
 		<header class="bmd-layout-header">
 			<div class="navbar navbar-light bg-faded">
-			<button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s1">
-				<span class="sr-only">Toggle drawer</span>
-				<i class="material-icons">menu</i>
-			</button>
-			<ul class="nav navbar-nav">
-			</ul>
+				<button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s1">
+					<span class="sr-only">Toggle drawer</span>
+					<i class="material-icons">menu</i>
+				</button>
+				<ul class="nav navbar-nav">
+				</ul>
 			</div>
 		</header>
 		<div id="dw-s1" class="bmd-layout-drawer bg-faded">
 			<header>
-			<a class="navbar-brand">Satellites</a>
+				<a class="navbar-brand">Satellites</a>
 			</header>
 			<ul class="list-group" id="list-of-satellites">
 			</ul>
 		</div>
 		<main class="bmd-layout-content">
 			<div class="container">
-			<div id="cesiumContainer"></div>
+				<div id="cesiumContainer"></div>
 			</div>
 		</main>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
-	<script src="https://cdn.rawgit.com/HubSpot/tether/v1.3.4/dist/js/tether.min.js"></script>
-	<script src="https://cdn.rawgit.com/FezVrasta/bootstrap-material-design/dist/dist/bootstrap-material-design.iife.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.4/js/tether.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/4.0.2/bootstrap-material-design.iife.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/js/ie10-viewport-bug-workaround.js"></script>
 	<script>
 		$('body').bootstrapMaterialDesign();
