@@ -20,9 +20,7 @@ class CesiumWithCorrectedReflectance {
             navigationHelpButton: false,
             navigationInstructionsInitiallyVisible: false,
             sceneMode : CesiumLibrary.SceneMode.SCENE3D,
-            terrainProvider : new CesiumLibrary.CesiumTerrainProvider({
-                url : 'https://assets.agi.com/stk-terrain/v1/tilesets/world/tiles'
-            }),
+            terrainProvider : CesiumLibrary.createWorldTerrain(),
             imageryProvider : new CesiumLibrary.WebMapTileServiceImageryProvider({
                 url : 
                     'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/'+
