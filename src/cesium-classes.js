@@ -31,7 +31,7 @@ class CesiumWithCorrectedReflectance {
                 tileMatrixSetID : 'GoogleMapsCompatible_Level9',
                 maximumLevel : 5,
                 format : 'image/jpeg',
-                credit : new CesiumLibrary.Credit({text : 'NASA Global Imagery Browse Services for EOSDIS'})
+                credit : new CesiumLibrary.Credit('NASA Global Imagery Browse Services for EOSDIS')
             }),
             mapProjection : new CesiumLibrary.WebMercatorProjection()
         });
